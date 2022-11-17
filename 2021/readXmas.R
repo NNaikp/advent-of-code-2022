@@ -6,6 +6,7 @@ library(glue)
 library(httr)
 library(readr)
 library(memoise)
+library(dplyr)
 
 
 # Set URL ----------------------------------------------------------
@@ -14,8 +15,8 @@ aoc_build_url <- function(day, year = 2022) {
   return(formatted_url)
 }
 
-# Use keyring::key_set() to set session cookie from AOC webpage
-# keyring::key_set("Rstudio Keyring secrets, keyring = "aoc_cookie") 
+# Use keyring::keyring_create("AOC") and enter a password for the keyring
+# Use keyring::key_set("Rstudio Keyring secrets", keyring = "AOC") to set session cookie from AOC webpage
 # --> This prompts you to enter the session cookie.
 # --> Session cookie can be retrieved from opening up a dataset from one of the AOC puzzles
 # ----> Right-click + Inspect
@@ -26,7 +27,7 @@ aoc_build_url <- function(day, year = 2022) {
 
 # Retrieve data
 .aoc_get_response <- function(day, 
-                             session_cookie = keyring::key_get("Rstudio Keyring secrets", keyring = "aoc_cookie"), 
+                             session_cookie = keyring::key_get("Rstudio Keyring secrets", keyring = "AOC"), 
                              year = 2021) {
   aoc_url <- aoc_build_url(day, year)
   cookie <- set_cookies(session = session_cookie)
@@ -43,11 +44,8 @@ get_pzl_data <- function(day, year = 2021) {
   
   aoc_get_response(day, year = year) %>% 
     content(encoding = 'UTF-8') %>% 
-    read_lines() %>% 
-    as.numeric()
+    read_lines()
   
 }
 
-# Get data
-pzl_data <- get_pzl_data(1, year = 2021)
 
