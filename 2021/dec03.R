@@ -93,8 +93,30 @@ sol1 <- gamma*epsilon
 # 
 # Use the binary numbers in your diagnostic report to calculate the oxygen generator rating and CO2 scrubber rating, then multiply them together. What is the life support rating of the submarine? (Be sure to represent your answer in decimal, not binary.)
 
+# Solution 2/2 ----------------------------------------------------------
 
+# Retrieve starting points
+oxy_start <- names(vert_cut[[1]][2])
+co2_start <- names(vert_cut[[1]][1])
 
+first <- pzl_data[substr(pzl_data,1,1) == oxy_start]
+
+  ds <- pzl_data
+
+for (i in 1:(nchar(pzl_data[1]) - 1)) {
+  
+  ds <- ds
+  maxval <- table(substr(ds,i,i)) %>% 
+    sort(.)
+  print(maxval)
+    
+  selector <- ifelse(maxval[1] == maxval[2], "1",names(maxval)[1])
+  print(selector)
+    
+  ds <- ds[substr(ds,i,i) == selector]
+
+  print(ds)
+}
 
 
 
