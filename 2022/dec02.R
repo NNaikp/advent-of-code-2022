@@ -146,7 +146,6 @@ winner2 <- map(strsplit(pzl_data," "), function(x) {
   
   new_x <- x %>% 
     rps_translate(c("A","B","C")) %>% 
-    rps_translate(c("X","Y","Z")) %>% 
     as.integer(.)
   
   # Handle draw, loss and win
