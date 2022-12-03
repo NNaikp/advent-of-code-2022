@@ -103,7 +103,7 @@ sol1 <- sum(items)
 # Find the item type that corresponds to the badges of each three-Elf group. 
 # What is the sum of the priorities of those item types?
 
-items <- sapply(seq(1, length(pzl_data), by = 3), function(x) {
+items2 <- sapply(seq(1, length(pzl_data), by = 3), function(x) {
  
   u_char <- unique(strsplit(pzl_data[x],"")[[1]])
     
