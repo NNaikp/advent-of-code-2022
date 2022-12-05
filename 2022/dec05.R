@@ -80,14 +80,12 @@ pzl_data <- get_pzl_data(5, year = 2022)
 # Split crates and commands
 elfcrates <- pzl_data[1:8] # Leave out column numbers
 
-colmax <- max(strsplit(gsub(" ","",pzl_data[9]),"")[[1]]) %>% 
-  as.numeric(.)
-
 commands <- pzl_data[11:length(pzl_data)] %>% 
   gsub("[a-z]","",.) %>% 
   map(., strsplit," ") %>% 
   unlist(recursive = FALSE) %>% 
   lapply(., function(x){x[x != ""]})
+
 
 # Cut crates into columns
 elfcuts <- seq(1, nchar(pzl_data[1]), by = 4)
@@ -103,38 +101,43 @@ cols <- map(1:length(elfcuts), function(x,crates = elfcrates, cuts = elfcuts) {
 
 
 # Function to move crates
-crane <- function(crate_cols,commands) {
+crane <- function(crate_cols,commands, type = 9000) {
   
-  # x: number of crates
-  x <- as.numeric(commands[1])
-  # y: from crate column y
-  y <- as.numeric(commands[2])
-  # z: to crate column z
-  z <- as.numeric(commands[3])
+  after <- crate_cols
+  for (i in 1:length(commands)) {
+    # x: number of crates
+    x <- as.numeric(commands[[i]][1])
+    # y: from crate column y
+    y <- as.numeric(commands[[i]][2])
+    # z: to crate column z
+    z <- as.numeric(commands[[i]][3])
+    
+    if (type == 9000) {
+      crate_qty <- c(x:1)
+    } else if (type == 9001) {
+      crate_qty <- c(1:x)
+    }
+    
+    load <- after[[y]][crate_qty]
+    
+    # remove load
+    after[[y]] <- after[[y]][-crate_qty]
+    
+    # Place load
+    after[[z]] <- c(load, after[[z]])
+  }
   
-  load <- crate_cols[[y]][c(x:1)]
+  solution <- lapply(after, `[[`,1) %>% 
+    unlist(.) %>% 
+    paste(., collapse = "") %>% 
+    gsub("\\[|\\]","",.)
   
-  # remove load
-  crate_cols[[y]] <- crate_cols[[y]][-c(x:1)]
   
-  # Place load
-  crate_cols[[z]] <- c(load, crate_cols[[z]])
-
-  return(crate_cols)
+  return(solution)
 }
 
-after <- cols
-for (i in 1:length(commands)) {
-  
-  input_crates <- after
-  after <- crane(input_crates, commands[[i]])
-  
-}
 
-sol1 <- lapply(after, `[[`,1) %>% 
-  unlist(.) %>% 
-  paste(., collapse = "") %>% 
-  gsub("\\[|\\]","",.)
+sol1 <- crane(cols, commands, type = 9000)
 
 
 
@@ -192,38 +195,7 @@ sol1 <- lapply(after, `[[`,1) %>%
 
 # Solution 2/2 ----------------------------------------------------------
 
-crane2 <- function(crate_cols,commands) {
-  
-  # x: number of crates
-  x <- as.numeric(commands[1])
-  # y: from crate column y
-  y <- as.numeric(commands[2])
-  # z: to crate column z
-  z <- as.numeric(commands[3])
-  
-  load <- crate_cols[[y]][c(1:x)]
-  
-  # remove load
-  crate_cols[[y]] <- crate_cols[[y]][-c(1:x)]
-  
-  # Place load
-  crate_cols[[z]] <- c(load, crate_cols[[z]])
-  
-  return(crate_cols)
-}
-
-after2 <- cols
-for (i in 1:length(commands)) {
-  
-  input_crates <- after2
-  after2 <- crane2(input_crates, commands[[i]])
-  
-}
-
-sol2 <- lapply(after2, `[[`,1) %>% 
-  unlist(.) %>% 
-  paste(., collapse = "") %>% 
-  gsub("\\[|\\]","",.)
+sol2 <- crane(cols, commands, type = 9001)
 
 
 
